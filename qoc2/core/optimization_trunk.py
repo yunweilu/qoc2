@@ -14,13 +14,13 @@ def GRAPE(H_s,
           initial_controls,
           costs,evolution_time,
           initial_states,
-          max_iteration,  optimizer = Adam(), gradient_method = 0):
+          max_iteration, impose_control_conditions = None,  optimizer = Adam(), gradient_method = 0):
 
     grape_h, grape_nh = grape_info(H_s,
           H_controls,
           control_eval_count,
           costs,evolution_time,
-          initial_states,
+          initial_states, impose_control_conditions,
           max_iteration,
           gradient_method).to_namedtuple()
     # Define a dictionary mapping gradient methods to their corresponding functions

@@ -9,7 +9,10 @@ def generate_matrices(d):
     H_controls = [np.eye(d)]  # Example control Hamiltonian, adjust as needed
     return H_s, H_controls
 
-
+def bc(control):
+    control[0][0]=0
+    control[0][1] = 0
+    return control
 # Initialize other parameters
 evolution_time = 10
 max_iteration = 10000
@@ -31,5 +34,5 @@ costs = [Infidelity(target_states=target_states)]
 
 # Measure runtime
 print(GRAPE(H_s, H_controls, control_eval_count, initial_controls, costs, evolution_time,
-      initial_states, max_iteration))
+      initial_states, max_iteration,impose_control_conditions=bc))
 

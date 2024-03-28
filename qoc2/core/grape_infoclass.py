@@ -6,7 +6,7 @@ from qoc2.matrix_exponential.pade import determine_pade_order, one_norm, THETA_J
 
 class grape_info():
     def __init__(self, H_s, H_controls, control_eval_count, costs, evolution_time,
-                 initial_states, max_iteration, gradient_method):
+                 initial_states, impose_control_conditions, max_iteration, gradient_method):
         self.H_s = H_s
         self.H_controls = H_controls
         self.control_eval_count = int(control_eval_count)
@@ -20,7 +20,7 @@ class grape_info():
         self.scale, self.pade_order = self.pade_args()
         self.cost_num = len(costs)
         self.costs = self.costs_format_converter(costs)
-
+        self.impose_control_conditions = impose_control_conditions
 
     def pade_args(self):
         one_norm_ = one_norm(-1j * self.H_s * self.dt)
@@ -44,7 +44,7 @@ class grape_info():
     GrapeInfoTupleH = namedtuple('GrapeInfoTupleNH', [
         'control_eval_count', 'evolution_time', 'max_iteration',
         'gradient_method', 'control_count', 'control_shape','pade_order','scale','costs'
-        ,'cost_num'
+        ,'cost_num', 'impose_control_conditions'
     ])
 
     def costs_format_converter(self, costs):
@@ -80,7 +80,8 @@ class grape_info():
             pade_order = self.pade_order,
             scale =  self.scale,
             costs=self.costs,
-            cost_num= self.cost_num
+            cost_num= self.cost_num,
+            impose_control_conditions = self.impose_control_conditions
         )
 
         return grape_h, grape_nh

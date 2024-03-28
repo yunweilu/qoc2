@@ -11,10 +11,12 @@ def _cost_AD(controls,grape,reporter):
 def _gradients_AD(controls, grape_h, grape_nh):
     # Initialize a new array with the desired shape
     reshaped_controls = jnp.zeros(grape_h.control_shape)
-
+    impose_control_conditions = grape_h.impose_control_conditions
     # Element-wise copy from 'controls' to 'reshaped_controls'
     # Note: Assuming 'controls' can be reshaped to 'grape['control_shape']' without loss of data
     reshaped_controls = reshaped_controls.at[:].set(controls.reshape(grape_h.control_shape))
+    if impose_control_conditions != None:
+        reshaped_controls = impose_control_conditions(impose_control_conditions)
     (cost,cost_set), grads = value_and_grad(evolution_ad,has_aux=True)(reshaped_controls,grape_h,grape_nh)
     grads = jnp.ravel(grads)
     return cost, grads, cost_set
