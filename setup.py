@@ -9,6 +9,7 @@ NAME = "qoc2"
 VERSION = "0.1"
 DEPENDENCIES = [
     "jax",
+    "jaxlib",
     "numpy",
     "scipy",
 ]
