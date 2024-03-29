@@ -32,6 +32,7 @@ def GRAPE(H_s,
     # Assign the cost_function and gradients_function based on the gradient_method
     cost_function, gradients_function = method_functions[gradient_method]
     print("compilation is done")
+    initial_controls = jnp.ravel(initial_controls)
     pulse,result = optimizer.run(cost_function,
                         max_iteration,
                         initial_controls,

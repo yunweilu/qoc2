@@ -106,6 +106,7 @@ class Adam(object):
             if grads_norm < self.grads_thre:
                 return params,self.optimization_result
             params = self.update(grads, params)
+        return params, self.optimization_result
 
     def update(self, grads, params):
         """Update the learning parameters for the current iteration.
