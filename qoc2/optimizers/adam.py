@@ -100,13 +100,12 @@ class Adam(object):
 
         params = initial_params
         for i in range(iteration_count):
-            cost, grads, cost_set = jacobian(params, *args)
+            cost, grads, cost_set, pulse = jacobian(params, *args)
             self.optimization_result.result_update(cost,cost_set,grads)
             grads_norm = np.linalg.norm(grads)
-            if grads_norm < self.grads_thre:
-                return params,self.optimization_result
+            if grads_norm < self.grads_thre or i == iteration_count-1:
+                return pulse,self.optimization_result
             params = self.update(grads, params)
-        return params, self.optimization_result
 
     def update(self, grads, params):
         """Update the learning parameters for the current iteration.

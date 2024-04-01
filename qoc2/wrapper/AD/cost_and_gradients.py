@@ -19,7 +19,7 @@ def _gradients_AD(controls, grape_h, grape_nh):
         reshaped_controls = impose_control_conditions(reshaped_controls)
     (cost,cost_set), grads = value_and_grad(evolution_ad,has_aux=True)(reshaped_controls,grape_h,grape_nh)
     grads = jnp.ravel(grads)
-    return cost, grads, cost_set
+    return cost, grads, cost_set, reshaped_controls
 
 gradients_AD = jit(_gradients_AD, static_argnums=1)
 cost_AD = jit(_cost_AD, static_argnums=1)
