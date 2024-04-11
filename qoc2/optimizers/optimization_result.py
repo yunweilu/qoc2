@@ -1,4 +1,4 @@
-import jax.numpy as jnp
+import numpy as np
 
 class OptimizationResult:
     def __init__(self,):
