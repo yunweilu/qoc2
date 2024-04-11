@@ -1,4 +1,4 @@
-import numpy as np
+import jax.numpy as jnp
 
 class OptimizationResult:
     def __init__(self,):
@@ -37,3 +37,7 @@ class OptimizationResult:
             output += "  {:^1.8e}  |".format(cost_values[i])
         output += "  {:^1.8e}  ".format(grads_norm)
         print(output)
+
+    def reformat(self):
+        self.cost_values = jnp.array(self.cost_values)
+        self.cost_values = self.cost_values.reshape((-1, self.optimization_result.shape[0]))

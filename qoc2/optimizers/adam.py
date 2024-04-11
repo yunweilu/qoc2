@@ -104,6 +104,7 @@ class Adam(object):
             self.optimization_result.result_update(cost,cost_set,grads)
             grads_norm = np.linalg.norm(grads)
             if grads_norm < self.grads_thre or i == iteration_count-1:
+                self.optimization_result.reformat()
                 return pulse,self.optimization_result
             params = self.update(grads, params)
 
