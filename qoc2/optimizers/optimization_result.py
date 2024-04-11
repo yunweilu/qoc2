@@ -40,4 +40,4 @@ class OptimizationResult:
 
     def reformat(self):
         self.cost_values = np.array(self.cost_values)
-        self.cost_values = self.cost_values.reshape((-1, self.optimization_result.shape[0]))
+        self.cost_values = self.cost_values.reshape((-1, self.cost_values.shape[0]))
