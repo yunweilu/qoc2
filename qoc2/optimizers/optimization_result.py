@@ -39,5 +39,5 @@ class OptimizationResult:
         print(output)
 
     def reformat(self):
-        self.cost_values = jnp.array(self.cost_values)
+        self.cost_values = np.array(self.cost_values)
         self.cost_values = self.cost_values.reshape((-1, self.optimization_result.shape[0]))
