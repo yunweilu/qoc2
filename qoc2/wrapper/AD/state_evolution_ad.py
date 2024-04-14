@@ -18,6 +18,7 @@ def print_callback(arg, transform):
     return arg
 def evolution_ad(controls, grape_h, grape_nh):
     control_eval_count = grape_h.control_eval_count
+    control_shape = grape_h.control_shape
     states = jnp.transpose(grape_nh.initial_states)
     dt = grape_h.evolution_time / control_eval_count
     H_s = grape_nh.H_s
@@ -27,13 +28,32 @@ def evolution_ad(controls, grape_h, grape_nh):
     pade_order = grape_h.pade_order
     scale = grape_h.scale
     time_steps = jnp.arange(control_eval_count, dtype=jnp.int64)
+    times = jnp.linspace(0, grape_h.evolution_time-dt, control_eval_count )
+
+    def scan_inner_loop(carry, x):
+        control_k = carry
+        time_i, i = x
+        # Direct use of i as an index for JAX arrays is fine.
+        updated_control = control_func_spec(control_k, time_i, i.astype(int))
+        return control_k, updated_control
+
+    updated_controls = jnp.zeros_like(controls)
+    if grape_h.control_func is not None:
+        control_func = grape_h.control_func
+        for k in range(controls.shape[0]):
+            global control_func_spec
+            control_func_spec = control_func[k]
+            control_k = controls[k]
+            xs = jnp.stack((times, jnp.arange(control_eval_count)), axis=1)
+            _, updated_controls_k = jax.lax.scan(scan_inner_loop, control_k, xs)
+            updated_controls = updated_controls.at[k].set(updated_controls_k)
     all_states = jnp.zeros((states.shape[0], states.shape[1]), dtype=jnp.complex128)
 
     def scan_body(carry, time_step):
         nonlocal all_states
         states = carry
 
-        H_total = get_H_total(controls, H_controls, H_s, time_step)
+        H_total = get_H_total(updated_controls, H_controls, H_s, time_step)
         propagator = expm_pade(-1j * dt * H_total, scale=scale, pade_order=pade_order)
         new_states = jnp.matmul(propagator, states)
         all_states = new_states
@@ -46,7 +66,7 @@ def evolution_ad(controls, grape_h, grape_nh):
     for i, field_name in enumerate(costs._fields):
         # Get the function variable dynamically using getattr
         function_variable = getattr(costs, field_name)
-        _cost_value = function_variable(controls, all_states)
+        _cost_value = function_variable(updated_controls, all_states)
         cost_value += _cost_value
         intermediate_results = intermediate_results.at[i].set(_cost_value)  # Store intermediate result
 
