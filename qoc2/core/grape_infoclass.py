@@ -63,6 +63,8 @@ class grape_info():
         return cost_named_tuple(*cost_named_tuple_values)
 
     def control_func_converter(self, control_funcs):
+        if control_funcs == None:
+            return None
         control_named_tuple_fields = []
         control_named_tuple_values = []
 
