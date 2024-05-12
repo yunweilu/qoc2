@@ -2,6 +2,7 @@ from collections import namedtuple
 import jax.numpy as jnp
 import jax
 from qoc2.matrix_exponential.pade import determine_pade_order, one_norm, THETA_JAX, PADE_ORDERS_JAX
+from qoc2.core.auxiliary_functions import pwc
 
 
 class grape_info():
@@ -20,7 +21,12 @@ class grape_info():
         self.scale, self.pade_order = self.pade_args()
         self.cost_num = len(costs)
         self.costs = self.costs_format_converter(costs)
-        self.control_func = self.control_func_converter(control_func )
+        self.control_func = control_func
+        if self.control_func == None:
+            self.control_func = []
+            for i in range(self.control_count):
+                self.control_func.append(pwc())
+        self.control_func = self.control_func_converter(self.control_func )
         self.impose_control_conditions = impose_control_conditions
     def pade_args(self):
         one_norm_ = one_norm(-1j * self.H_s * self.dt)
@@ -63,8 +69,7 @@ class grape_info():
         return cost_named_tuple(*cost_named_tuple_values)
 
     def control_func_converter(self, control_funcs):
-        if control_funcs == None:
-            return None
+
         control_named_tuple_fields = []
         control_named_tuple_values = []
 

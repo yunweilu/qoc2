@@ -38,15 +38,14 @@ def evolution_ad(controls, grape_h, grape_nh):
         return control_k, updated_control
 
     updated_controls = jnp.zeros_like(controls)
-    if grape_h.control_func is not None:
-        control_func = grape_h.control_func
-        for k in range(controls.shape[0]):
-            global control_func_spec
-            control_func_spec = control_func[k]
-            control_k = controls[k]
-            xs = jnp.stack((times, jnp.arange(control_eval_count)), axis=1)
-            _, updated_controls_k = jax.lax.scan(scan_inner_loop, control_k, xs)
-            updated_controls = updated_controls.at[k].set(updated_controls_k)
+    control_func = grape_h.control_func
+    for k in range(controls.shape[0]):
+        global control_func_spec
+        control_func_spec = control_func[k]
+        control_k = controls[k]
+        xs = jnp.stack((times, jnp.arange(control_eval_count)), axis=1)
+        _, updated_controls_k = jax.lax.scan(scan_inner_loop, control_k, xs)
+        updated_controls = updated_controls.at[k].set(updated_controls_k)
     all_states = jnp.zeros((states.shape[0], states.shape[1]), dtype=jnp.complex128)
 
     def scan_body(carry, time_step):
